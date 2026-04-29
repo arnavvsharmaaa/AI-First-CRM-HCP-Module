@@ -7,7 +7,7 @@
 
 ## 📸 Screenshot
 
-![AI-First CRM — Log Interaction Screen](./docs/modulepage.png)
+![AI-First CRM — Log Interaction Screen](./docs/moduleepage.png)
 
 ---
 
