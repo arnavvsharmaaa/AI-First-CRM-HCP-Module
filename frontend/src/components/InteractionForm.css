@@ -1,0 +1,185 @@
+/* ─── Base layout ─────────────────────────────────────────────────────────── */
+.interaction-form-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  color: var(--text-primary);
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group.half {
+  flex: 1;
+}
+
+.form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* ─── Read-only input / textarea / select ─────────────────────────────────── */
+.read-only-input {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  cursor: default;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.read-only-input:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+}
+
+textarea.read-only-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Dropdown (interaction type) */
+.read-only-select {
+  appearance: auto;
+  cursor: default;
+  pointer-events: none; /* visual only — changes come from Redux */
+}
+
+/* ─── Field highlight animation ───────────────────────────────────────────── */
+/*
+ * Applied dynamically via JS when lastUpdatedField matches.
+ * Fades background from #e8f0fe (Google-blue tint) back to transparent
+ * over 1.5 s.  The animation-fill-mode keeps the start colour for the
+ * first frame so the flash is visible even on fast machines.
+ */
+@keyframes fieldFlash {
+  0%   { background-color: #e8f0fe; border-color: rgba(26, 115, 232, 0.55); }
+  60%  { background-color: #eef4ff; border-color: rgba(26, 115, 232, 0.25); }
+  100% { background-color: var(--bg-page); border-color: var(--border); }
+}
+
+.field-highlighted {
+  animation: fieldFlash 1.5s ease-out forwards;
+}
+
+/* ─── Sentiment Group ─────────────────────────────────────────────────────── */
+.sentiment-group {
+  display: flex;
+  gap: 1rem;
+  padding: 0.6rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--bg-page);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Allow the flash keyframe to also hit the sentiment wrapper */
+.sentiment-group.field-highlighted {
+  animation: fieldFlash 1.5s ease-out forwards;
+}
+
+.sentiment-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: default;
+}
+
+.sentiment-label input[type='radio'] {
+  accent-color: var(--primary-blue);
+  width: 16px;
+  height: 16px;
+}
+
+.sentiment-radio {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.sentiment-radio.positive { color: var(--sentiment-positive); }
+.sentiment-radio.neutral  { color: var(--sentiment-neutral);  }
+.sentiment-radio.negative { color: var(--sentiment-negative); }
+
+/* ─── AI Chips ────────────────────────────────────────────────────────────── */
+.chip-hint {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: 0.25rem;
+}
+
+.ai-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 42px;
+  padding: 0.5rem;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  background-color: var(--bg-page);
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.ai-chips.field-highlighted {
+  animation: fieldFlash 1.5s ease-out forwards;
+}
+
+.ai-chip {
+  background-color: rgba(26, 115, 232, 0.1);
+  color: var(--primary-blue);
+  padding: 0.4rem 0.8rem;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid rgba(26, 115, 232, 0.2);
+  font-family: inherit;
+}
+
+/* Clickable chip variant */
+.ai-chip-clickable {
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.ai-chip-clickable:hover {
+  background-color: rgba(26, 115, 232, 0.18);
+  box-shadow: 0 2px 6px rgba(26, 115, 232, 0.2);
+  transform: translateY(-1px);
+}
+
+.ai-chip-clickable:active {
+  transform: translateY(0);
+  box-shadow: none;
+  background-color: rgba(26, 115, 232, 0.28);
+}
+
+/* ─── Muted helper text ───────────────────────────────────────────────────── */
+.text-muted {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}

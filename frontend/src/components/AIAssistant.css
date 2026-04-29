@@ -1,0 +1,294 @@
+/* ─── Container ─────────────────────────────────────────────────────────── */
+.ai-assistant-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--bg-ai-panel);
+}
+
+/* ─── Header ────────────────────────────────────────────────────────────── */
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg-panel);
+  flex-shrink: 0;
+}
+
+.chat-header-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.chat-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.chat-header-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 0.15rem;
+}
+
+/* ─── WebSocket disconnect banner ───────────────────────────────────────── */
+.ws-disconnect-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.5rem;
+  background-color: #fff3cd;
+  border-bottom: 1px solid #ffc107;
+  color: #856404;
+  font-size: 0.82rem;
+  font-weight: 500;
+  flex-shrink: 0;
+  animation: bannerSlideIn 0.25s ease-out;
+}
+
+@keyframes bannerSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ws-banner-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ffc107;
+  animation: bannerPulse 1s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes bannerPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.75); }
+}
+
+/* ─── Message history ───────────────────────────────────────────────────── */
+.chat-history {
+  flex: 1;
+  padding: 1.25rem 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+/* ─── Empty state ───────────────────────────────────────────────────────── */
+.empty-chat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.empty-chat-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-chat-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.empty-chat-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.empty-chat-hint em {
+  font-style: italic;
+  color: var(--primary-blue);
+}
+
+/* ─── Messages ──────────────────────────────────────────────────────────── */
+.chat-message {
+  display: flex;
+  max-width: 85%;
+}
+
+.chat-message.user      { align-self: flex-end;   }
+.chat-message.assistant { align-self: flex-start; }
+
+/* ─── Message bubble ────────────────────────────────────────────────────── */
+.message-bubble {
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  word-break: break-word;
+}
+
+.chat-message.user .message-bubble {
+  background-color: var(--primary-blue);
+  color: white;
+  border-radius: 16px 16px 0 16px;
+}
+
+.chat-message.assistant .message-bubble {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: 16px 16px 16px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* Error message bubble variant */
+.chat-message.error-message .message-bubble {
+  background-color: #fff5f5;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.message-content {
+  font-size: 0.93rem;
+  line-height: 1.5;
+  margin: 0;
+  white-space: pre-wrap; /* preserve newlines in error messages */
+}
+
+.message-timestamp {
+  display: block;
+  font-size: 0.7rem;
+  margin-top: 0.35rem;
+  opacity: 0.6;
+}
+
+.chat-message.user .message-timestamp {
+  text-align: right;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.chat-message.assistant .message-timestamp {
+  color: var(--text-muted);
+}
+
+/* ─── Animated three-dot thinking indicator ─────────────────────────────── */
+.thinking-bubble {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.85rem 1.1rem;
+  min-width: 56px;
+}
+
+.thinking-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--text-muted);
+  animation: thinkingBounce 1.4s infinite ease-in-out;
+}
+
+.thinking-dot:nth-child(1) { animation-delay: 0s;   }
+.thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+.thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes thinkingBounce {
+  0%, 60%, 100% { transform: translateY(0);   opacity: 0.4; }
+  30%            { transform: translateY(-6px); opacity: 1;   }
+}
+
+/* ─── Input area ────────────────────────────────────────────────────────── */
+.chat-input-container {
+  padding: 1.25rem 1.5rem;
+  background-color: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.chat-input-container textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  resize: none;
+  font-family: inherit;
+  font-size: 0.93rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: var(--bg-page);
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+
+.chat-input-container textarea:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.12);
+}
+
+.chat-input-container textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ─── Log button ─────────────────────────────────────────────────────────── */
+.log-button {
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 0.65rem 1.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+  letter-spacing: 0.01em;
+  min-width: 90px;
+  justify-content: center;
+}
+
+.log-button:hover:not(:disabled) {
+  background-color: #333333;
+}
+
+.log-button:active:not(:disabled) {
+  background-color: #000000;
+}
+
+.log-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Loading state — subtle colour shift so user knows it's working */
+.log-button--loading {
+  background-color: #3c4043;
+}
+
+/* ─── Button spinner ─────────────────────────────────────────────────────── */
+.btn-spinner {
+  width: 15px;
+  height: 15px;
+  animation: spinRotate 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spinRotate {
+  to { transform: rotate(360deg); }
+}

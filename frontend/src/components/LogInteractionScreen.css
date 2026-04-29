@@ -1,0 +1,44 @@
+.log-interaction-screen {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.left-panel {
+  flex: 1;
+  background-color: var(--bg-panel);
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+  padding: 2rem;
+}
+
+.right-panel {
+  width: 400px;
+  min-width: 350px;
+  background-color: var(--bg-ai-panel);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1024px) {
+  .right-panel {
+    width: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .log-interaction-screen {
+    flex-direction: column;
+  }
+  
+  .left-panel, .right-panel {
+    width: 100%;
+    flex: none;
+    height: 50%;
+  }
+  
+  .left-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
