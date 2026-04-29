@@ -19,7 +19,7 @@ async def edit_interaction(input: str, interaction_id: str) -> dict:
             "ai_message": "No interaction is currently loaded to edit."
         }
         
-    llm = ChatGroq(model="gemma2-9b-it", temperature=0, api_key=os.getenv("GROQ_API_KEY"))
+    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0, api_key=os.getenv("GROQ_API_KEY"))
     
     system_prompt = """You are a CRM field editor. The user wants to update specific fields of a logged interaction.
 Identify ONLY the fields that need to change based on the user's input.
