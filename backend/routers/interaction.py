@@ -7,6 +7,7 @@ from schemas.interaction import ChatRequest
 from websocket_manager import manager
 import asyncio
 import logging
+import re
 
 # Configure file logging
 logging.basicConfig(
@@ -34,38 +35,12 @@ def _exception_chain(exc: BaseException) -> str:
     parts, seen = [], set()
     while exc is not None and id(exc) not in seen:
         seen.add(id(exc))
-        parts.append(f"{type(exc).__module__}.{type(exc).__name__}: {str(exc)[:200]}")
+        # Redact credentials — e.g. httpx echoes a rejected Authorization header
+        msg = re.sub(r"Bearer(\s|\n)*[^\s'\"]+", "Bearer [redacted]", str(exc))
+        msg = re.sub(r"gsk_[A-Za-z0-9]+", "gsk_[redacted]", msg)
+        parts.append(f"{type(exc).__module__}.{type(exc).__name__}: {msg[:200]}")
         exc = exc.__cause__ or exc.__context__
     return " <- ".join(parts)
-
-
-# TEMPORARY: diagnose connectivity to Groq from the host. Never returns the key.
-@router.get("/api/diag/groq")
-async def diag_groq():
-    import os, socket, httpx
-    key = os.getenv("GROQ_API_KEY") or ""
-    result = {
-        "key_present": bool(key),
-        "key_length": len(key),
-        "key_starts_gsk": key.startswith("gsk_"),
-        "key_is_ascii": key.isascii(),
-        "proxy_env": sorted(k for k in os.environ if "proxy" in k.lower()),
-        "groq_base_url_env": os.getenv("GROQ_BASE_URL"),
-    }
-    try:
-        infos = socket.getaddrinfo("api.groq.com", 443, proto=socket.IPPROTO_TCP)
-        result["dns"] = sorted({i[4][0] for i in infos})
-    except Exception as e:
-        result["dns"] = f"FAILED: {_exception_chain(e)}"
-    try:
-        async with httpx.AsyncClient(timeout=15) as client:
-            r = await client.get("https://api.groq.com/openai/v1/models",
-                                 headers={"Authorization": f"Bearer {key}"})
-        result["groq_http_status"] = r.status_code
-        result["groq_body_snippet"] = r.text[:200] if r.status_code != 200 else "ok"
-    except Exception as e:
-        result["groq_http_error"] = _exception_chain(e)
-    return result
 
 
 @router.get("/api/test")

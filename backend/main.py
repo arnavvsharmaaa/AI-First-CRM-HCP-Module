@@ -1,4 +1,11 @@
 import os
+
+# Pasting a key into a hosting dashboard can add a stray newline/space, which makes
+# the Authorization header illegal (surfaces as groq.APIConnectionError). Strip it
+# before any module reads the key.
+if os.getenv("GROQ_API_KEY"):
+    os.environ["GROQ_API_KEY"] = os.environ["GROQ_API_KEY"].strip()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from models.database import engine, Base
