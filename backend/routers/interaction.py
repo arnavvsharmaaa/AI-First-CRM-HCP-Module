@@ -29,6 +29,45 @@ from agent.graph import graph
 from langchain_core.messages import HumanMessage
 import json
 
+def _exception_chain(exc: BaseException) -> str:
+    """'TypeA: msg <- TypeB: msg <- ...' following __cause__/__context__."""
+    parts, seen = [], set()
+    while exc is not None and id(exc) not in seen:
+        seen.add(id(exc))
+        parts.append(f"{type(exc).__module__}.{type(exc).__name__}: {str(exc)[:200]}")
+        exc = exc.__cause__ or exc.__context__
+    return " <- ".join(parts)
+
+
+# TEMPORARY: diagnose connectivity to Groq from the host. Never returns the key.
+@router.get("/api/diag/groq")
+async def diag_groq():
+    import os, socket, httpx
+    key = os.getenv("GROQ_API_KEY") or ""
+    result = {
+        "key_present": bool(key),
+        "key_length": len(key),
+        "key_starts_gsk": key.startswith("gsk_"),
+        "key_is_ascii": key.isascii(),
+        "proxy_env": sorted(k for k in os.environ if "proxy" in k.lower()),
+        "groq_base_url_env": os.getenv("GROQ_BASE_URL"),
+    }
+    try:
+        infos = socket.getaddrinfo("api.groq.com", 443, proto=socket.IPPROTO_TCP)
+        result["dns"] = sorted({i[4][0] for i in infos})
+    except Exception as e:
+        result["dns"] = f"FAILED: {_exception_chain(e)}"
+    try:
+        async with httpx.AsyncClient(timeout=15) as client:
+            r = await client.get("https://api.groq.com/openai/v1/models",
+                                 headers={"Authorization": f"Bearer {key}"})
+        result["groq_http_status"] = r.status_code
+        result["groq_body_snippet"] = r.text[:200] if r.status_code != 200 else "ok"
+    except Exception as e:
+        result["groq_http_error"] = _exception_chain(e)
+    return result
+
+
 @router.get("/api/test")
 async def test_endpoint():
     print("=== TEST ENDPOINT HIT ===")
@@ -155,10 +194,19 @@ async def chat_endpoint(request: ChatRequest):
                 "aiSuggestedFollowups": []
             })
 
-    except Exception:
+    except Exception as exc:
         import traceback
         print("!!! Error in agent processing !!!", flush=True)
         traceback.print_exc()
+        # One-line summary of the whole cause chain — log viewers often cut long tracebacks
+        print(f"AGENT ERROR CHAIN: {_exception_chain(exc)}", flush=True)
+
+        # Tell the user instead of silently dropping the reply
+        await manager.broadcast_to_session(request.session_id, {
+            "type": "form_update",
+            "fields": {},
+            "ai_message": "⚠️ Sorry, the AI service is unavailable right now, so I couldn't process that. Please try again in a moment."
+        })
 
     print("Agent processing complete. Sending thinking=false", flush=True)
     await manager.broadcast_to_session(request.session_id, {
