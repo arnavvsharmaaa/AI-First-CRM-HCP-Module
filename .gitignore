@@ -12,3 +12,5 @@ dist/
 
 # IDE
 .vscode/
+# Logs
+debug.log

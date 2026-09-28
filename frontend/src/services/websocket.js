@@ -2,7 +2,7 @@
  * websocket.js
  *
  * Manages the WebSocket connection between the React frontend and the
- * FastAPI backend at ws://localhost:8000/ws/{session_id}.
+ * FastAPI backend at ${VITE_WS_BASE_URL}/{session_id} (default ws://localhost:8000/ws).
  *
  * WebSocket message types handled:
  *
@@ -31,7 +31,8 @@
 import { updateFormFields } from '../store/interactionSlice';
 import { setThinking, addMessage } from '../store/chatSlice';
 
-const WS_BASE_URL       = 'ws://localhost:8000/ws';
+// Must be wss:// in production (an https page cannot open ws://)
+const WS_BASE_URL       = import.meta.env.VITE_WS_BASE_URL || 'ws://localhost:8000/ws';
 const RECONNECT_DELAY_MS = 3000;
 
 /**

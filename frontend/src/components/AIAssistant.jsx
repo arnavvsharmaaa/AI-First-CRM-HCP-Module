@@ -21,7 +21,7 @@ import { addMessage, setThinking, setSessionId } from '../store/chatSlice';
 import { connectWebSocket } from '../services/websocket';
 import './AIAssistant.css';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 // ─── Spinner SVG ─────────────────────────────────────────────────────────────
 const Spinner = () => (
@@ -49,8 +49,9 @@ const AIAssistant = () => {
   const [inputValue, setInputValue]     = useState('');
   const [wsDisconnected, setWsDisconnected] = useState(false);
 
-  const chat     = useSelector((state) => state.chat);
-  const dispatch = useDispatch();
+  const chat          = useSelector((state) => state.chat);
+  const interactionId = useSelector((state) => state.interaction.id);
+  const dispatch      = useDispatch();
 
   // Stable refs — never stale inside callbacks
   const sessionIdRef = useRef(null);
@@ -115,7 +116,12 @@ const AIAssistant = () => {
       const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ message, session_id: currentSessionId }),
+        // interaction_id lets follow-up messages edit the interaction currently in the form
+        body:    JSON.stringify({
+          message,
+          session_id:     currentSessionId,
+          interaction_id: interactionId,
+        }),
       });
 
       if (!response.ok) {
@@ -131,13 +137,13 @@ const AIAssistant = () => {
         addMessage({
           id:        Date.now(),
           role:      'assistant',
-          content:   `⚠️ Sorry, I couldn't reach the server. Please make sure the backend is running on port 8000 and try again.\n\nError: ${error.message}`,
+          content:   `⚠️ Sorry, I couldn't reach the server. Please make sure the backend is running and try again.\n\nError: ${error.message}`,
           timestamp: new Date().toISOString(),
           isError:   true,
         })
       );
     }
-  }, [inputValue, chat.isThinking, dispatch]);
+  }, [inputValue, chat.isThinking, interactionId, dispatch]);
 
   // ── Keyboard shortcut ──────────────────────────────────────────────────────
   const handleKeyDown = (e) => {

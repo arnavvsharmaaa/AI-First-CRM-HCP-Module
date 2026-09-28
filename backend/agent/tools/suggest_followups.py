@@ -24,7 +24,7 @@ async def suggest_followups(input: str) -> dict:
     Returns 3-5 concrete, actionable follow-up suggestions as a list.
     """
     llm = ChatGroq(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         temperature=0,
         api_key=os.getenv("GROQ_API_KEY"),
     )

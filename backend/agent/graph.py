@@ -22,9 +22,9 @@ tools = [
     get_interaction,
 ]
 
-# ── LLM — primary: llama-3.3-70b-versatile (best tool-use quality on Groq) ──
+# ── LLM — openai/gpt-oss-120b (Groq retired the Llama 3.x models) ──
 llm = ChatGroq(
-    model="llama-3.3-70b-versatile",
+    model="openai/gpt-oss-120b",
     temperature=0,
     api_key=os.getenv("GROQ_API_KEY"),
 )
@@ -61,8 +61,9 @@ async def router_node(state: AgentState):
 
     if state.get("interaction_id"):
         sys_content += (
-            f"\n\nThe current interaction ID is: '{state['interaction_id']}'. "
-            "Pass this as interaction_id to edit_interaction if the user wants to edit."
+            f"\n\nAn interaction is currently loaded in the form (ID '{state['interaction_id']}'). "
+            "If the user wants to change or correct any of its fields, call edit_interaction "
+            "(the ID is supplied automatically) — do NOT call log_interaction for edits."
         )
 
     print("Invoking LLM to decide next action...")

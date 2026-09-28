@@ -28,3 +28,4 @@ class InteractionResponse(InteractionBase):
 class ChatRequest(BaseModel):
     message: str
     session_id: str
+    interaction_id: Optional[str] = None
