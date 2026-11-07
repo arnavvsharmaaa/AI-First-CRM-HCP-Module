@@ -1,13 +1,6 @@
-# Render Blueprint — free Postgres + free FastAPI web service, both in Singapore.
-# DATABASE_URL is linked from the database by Render (internal URL); only
-# GROQ_API_KEY has to be entered by hand when the Blueprint is created.
-
-databases:
-  - name: hcp-crm-db
-    databaseName: hcp_crm
-    plan: free
-    region: singapore
-    postgresMajorVersion: "16"
+# Render Blueprint — free FastAPI web service in Singapore.
+# Postgres is hosted on Neon (free tier, no 30-day expiry like Render's free DB).
+# Enter DATABASE_URL (Neon connection string) and GROQ_API_KEY by hand.
 
 services:
   - type: web
@@ -27,8 +20,6 @@ services:
       - key: CORS_ORIGINS
         value: http://localhost:5173
       - key: DATABASE_URL
-        fromDatabase:
-          name: hcp-crm-db
-          property: connectionString
+        sync: false
       - key: GROQ_API_KEY
         sync: false
